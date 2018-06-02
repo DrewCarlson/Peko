@@ -22,7 +22,7 @@ compile 'com.markodevcic.peko:peko:0.31'
 In an Activity or a Fragment:
 ```kotlin
 launch (UI) {
-    val permissionResultDeferred = Peko.requestPermissionsAsync(this, Manifest.permission.BLUETOOTH, Manifest.permission.WRITE_EXTERNAL_STORAGE) 
+    val permissionResultDeferred = activity.requestPermissionsAsync(Manifest.permission.BLUETOOTH, Manifest.permission.WRITE_EXTERNAL_STORAGE) 
     val (grantedPermissions) = permissionResultDeferred.await()
     
     if (Manifest.permission.BLUETOOTH in grantedPermissions) {
@@ -48,7 +48,7 @@ private val job = Job()
 
 private fun requestPermission(vararg permissions: String) {
     launch(job + UI) { // combine job with UI context
-        val result = Peko.requestPermissionsAsync(this@MainActivity, *permissions).await()
+        val result = this@MainActivity.requestPermissionsAsync(*permissions).await()
         setResults(result)
     }
 }
@@ -67,7 +67,7 @@ And when this Activity gets recreated in one of the Activity lifecycle functions
 ```kotlin
 
 //check if we have a request already (or some other way you detect screen orientation)
-if (Peko.isRequestInProgress()) {
+if (activity.isRequestingPermissions()) {
     launch (UI) {
         //get the existing request and await the result
         val result = Peko.resultDeferred!!.await()

@@ -7,9 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.markodevcic.peko.ActivityRotatingException
-import com.markodevcic.peko.Peko
-import com.markodevcic.peko.PermissionRequestResult
+import com.markodevcic.peko.*
 import com.markodevcic.peko.rationale.AlertDialogPermissionRationale
 import com.markodevcic.peko.rationale.SnackBarRationale
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,9 +24,9 @@ class MainActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_main)
 		setSupportActionBar(toolbar)
 
-		if (Peko.isRequestInProgress()) {
+		if (isRequestingPermissions()) {
 			launch (UI) {
-				val result = Peko.resultDeferred!!.await()
+				val result = permissionsResultDeferred!!.await()
 				setResults(result)
 			}
 		}
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 				this.setTitle("Need permissions")
 				this.setMessage("Please give permissions to use this feature")
 			}
-			val result = Peko.requestPermissionsAsync(this@MainActivity, *permissions, rationale = rationale).await()
+			val result = requestPermissionsAsync(*permissions, rationale = rationale).await()
 			setResults(result)
 		}
 	}
@@ -70,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 		val snackBar = Snackbar.make(rootView, "Permissions needed to continue", Snackbar.LENGTH_LONG)
 		val snackBarRationale = SnackBarRationale(snackBar, "Request again")
 		launch(job + UI) {
-			val result = Peko.requestPermissionsAsync(this@MainActivity, *permissions, rationale = snackBarRationale).await()
+			val result = requestPermissionsAsync(*permissions, rationale = snackBarRationale).await()
 			setResults(result)
 		}
 	}
